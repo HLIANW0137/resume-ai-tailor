@@ -5,7 +5,7 @@
 ![Vite](https://img.shields.io/badge/Vite-6.0-purple)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC)
 
-简体中文 | English
+[简体中文](./README_CN.md) | [English](./README.md)
 
 An intelligent, full-stack web application that helps you build, parse, and optimize your resume using AI. Tailor your resume to specific Job Descriptions (JD) and export it as a high-quality, single-page PDF.
 
