@@ -1,13 +1,6 @@
-# 📄 AI Resume Builder
-
-![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
-![React](https://img.shields.io/badge/React-19.0-blue)
-![Vite](https://img.shields.io/badge/Vite-6.0-purple)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC)
+# AI Resume Builder README.md
 
 [简体中文](./README_CN.md) | [English](./README.md)
-
-# AI Resume Builder README.md
 
 An intelligent, full-stack web application that helps you build, parse, and optimize your resume using AI. Tailor your resume to specific Job Descriptions (JD) and export it as a high-quality, single-page PDF.
 
@@ -43,7 +36,6 @@ An intelligent, full-stack web application that helps you build, parse, and opti
 
 ---
 
-
 ## 🚀 Getting Started 
 
 We provide one-click startup scripts to make local deployment as easy as possible. 
@@ -64,9 +56,101 @@ We provide one-click startup scripts to make local deployment as easy as possibl
 ---
 
 
+## 📖 How to Use
+
+1. **Configure API Key:**
+
+    - Click the Settings icon (⚙️) in the top right corner.
+
+    - Enter your Gemini API Key.
+
+    - (Optional) If you want to use a custom OpenAI-compatible API (like DeepSeek, Claude via proxy, etc.), enter the Base URL and the corresponding API Key.
+
+2. **Parse Resume:**
+
+    - Switch to the "Parse" tab.
+
+    - Paste your raw resume text and click Parse Resume. The AI will automatically populate the editor.
+
+3. **Optimize for a Job:**
+
+    - Switch to the "Optimize" tab.
+
+    - Paste the Job Description (JD) of the role you are applying for.
+
+    - Click Optimize Resume. Review the AI's proposed changes and click "Accept" to apply them to your resume.
+
+4. **Export:**
+
+    - Click Export -> Export as PDF to download your high-quality resume.
+
+    - Click Export -> Export JSON to save your data locally.
+
+---
+
+## 🔧 Customization & Adjustment
+
+This project is designed to be highly customizable. Here is how you can adjust it to your needs:
+
+### 1. Adjusting AI Prompts
+
+If you want to change how the AI parses text or optimizes the resume, you can modify the prompts in `src/services/ai.ts`.
+
+- **Parsing Prompt**: Locate the `parseResume` function. You can add new fields to the JSON schema or change the instructions.
+
+- **Optimization Prompt**: Locate the `optimizeResume` function. You can adjust the tone, language, or methodology (e.g., change from STAR method to XYZ method).
+
+### 2. Modifying the Resume Theme/Styles
+
+The resume preview is styled using Tailwind CSS.
+
+- To change colors, fonts, or spacing of the generated resume, edit the ResumePreview component (usually located in `src/App.tsx` or `src/components/ResumePreview.tsx`).
+
+- Global styles and Tailwind variables can be adjusted in `src/index.css`.
+
+### 3. Tweaking PDF Export Settings
+
+The PDF export uses `html-to-image` to capture the DOM. If you need to adjust the resolution or background color, locate the `handlePrint` function in `src/App.tsx`:
+
+```javascript
+
+const dataUrl = await toPng(resumeRef.current, { 
+  quality: 1.0, 
+  pixelRatio: 2, // Increase for higher resolution, decrease for smaller file size
+  backgroundColor: '#ffffff',
+  width: widthPx,
+  height: heightPx
+});
+```
+
+### 4. Adding New Resume Sections
+
+To add a new section (e.g., "Certifications"):
+
+1. Update the `ResumeData` interface in `src/types.ts`.
+
+2. Update the JSON schema in the `parseResume` function in `src/services/ai.ts`.
+
+3. Add the corresponding UI inputs in the Editor section and the display logic in the Preview section within `src/App.tsx`.
+
+---
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
+
+1. Fork the Project
+
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+
+5. Open a Pull Request
+
+---
 
 ## 📝 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-   
