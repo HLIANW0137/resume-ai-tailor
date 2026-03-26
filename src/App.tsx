@@ -4,15 +4,16 @@
  */
 
 import { useState, useRef } from 'react';
-import { ResumeData, OptimizationProposal, ApiConfig } from './types';
+import { ResumeData, OptimizationProposal, ApiConfig, PromptSettings } from './types';
 import { parseResume, optimizeResume } from './services/ai';
 import { ControlPanel } from './components/ControlPanel';
 import { ResumePreview } from './components/ResumePreview';
 import { Button } from './components/ui/button';
-import { Download, Settings, FileText, FileJson, File } from 'lucide-react';
+import { Download, Settings, FileText, FileJson, File, Globe } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from './components/ui/popover';
 import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
+import { Language, LANGUAGES, t } from './i18n';
 
 export default function App() {
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
@@ -23,6 +24,7 @@ export default function App() {
   const [lineSpacing, setLineSpacing] = useState<'tight' | 'snug' | 'normal' | 'relaxed'>('normal');
   const [twoColumn, setTwoColumn] = useState({ education: false, honors: false });
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [language, setLanguage] = useState<Language>('zh');
   const [apiConfig, setApiConfig] = useState<ApiConfig>(() => {
     const saved = localStorage.getItem('RESUME_API_CONFIG_V3');
     if (saved) {
@@ -35,6 +37,15 @@ export default function App() {
       apiKey: '',
       model: 'gemini-3.1-pro-preview'
     };
+  });
+
+  const [promptSettings, setPromptSettings] = useState<PromptSettings>({
+    preset: 'standard',
+    textVolume: 'normal',
+    tweakProjectNames: false,
+    fabricationLevel: 0.5,
+    addRelevantExperiences: false,
+    customInstructions: ''
   });
 
   const resumeRef = useRef<HTMLDivElement>(null);
@@ -73,7 +84,7 @@ export default function App() {
       pdf.save(`${resumeData.personalInfo?.name || 'resume'}.pdf`);
     } catch (error) {
       console.error('Failed to generate PDF', error);
-      alert('Failed to generate PDF. Please try again.');
+      alert(t(language, 'error.pdf'));
     } finally {
       setIsExporting(false);
     }
@@ -108,18 +119,18 @@ export default function App() {
 
   const handleParse = async (rawText: string) => {
     if (!apiConfig.apiKey) {
-      alert("Please configure your API Key in Settings first.");
+      alert(t(language, 'api.error'));
       return false;
     }
     setIsParsing(true);
     try {
-      const data = await parseResume(rawText, apiConfig);
+      const data = await parseResume(rawText, apiConfig, language);
       setResumeData(data);
       setProposals([]);
       return true;
     } catch (error: any) {
       console.error("Failed to parse resume", error);
-      alert(`Failed to parse resume: ${error.message || 'Unknown error'}`);
+      alert(`${t(language, 'error.parse')}${error.message || 'Unknown error'}`);
       return false;
     } finally {
       setIsParsing(false);
@@ -129,17 +140,17 @@ export default function App() {
   const handleOptimize = async (jd: string) => {
     if (!resumeData) return false;
     if (!apiConfig.apiKey) {
-      alert("Please configure your API Key in Settings first.");
+      alert(t(language, 'api.error'));
       return false;
     }
     setIsOptimizing(true);
     try {
-      const newProposals = await optimizeResume(resumeData, jd, apiConfig);
+      const newProposals = await optimizeResume(resumeData, jd, apiConfig, promptSettings, language);
       setProposals(newProposals);
       return true;
     } catch (error: any) {
       console.error("Failed to optimize resume", error);
-      alert(`Failed to optimize resume: ${error.message || 'Unknown error'}`);
+      alert(`${t(language, 'error.optimize')}${error.message || 'Unknown error'}`);
       return false;
     } finally {
       setIsOptimizing(false);
@@ -157,8 +168,16 @@ export default function App() {
       if (!prev) return prev;
       return {
         ...prev,
-        workExperience: prev.workExperience.map(w => w.id === moduleId ? { ...w, description: proposal.optimizedText } : w),
-        projectExperience: prev.projectExperience.map(p => p.id === moduleId ? { ...p, description: proposal.optimizedText } : p)
+        workExperience: prev.workExperience.map(w => w.id === moduleId ? { 
+          ...w, 
+          description: proposal.optimizedText,
+          ...(proposal.optimizedName ? { position: proposal.optimizedName } : {})
+        } : w),
+        projectExperience: prev.projectExperience.map(p => p.id === moduleId ? { 
+          ...p, 
+          description: proposal.optimizedText,
+          ...(proposal.optimizedName ? { name: proposal.optimizedName } : {})
+        } : p)
       };
     });
   };
@@ -174,6 +193,19 @@ export default function App() {
         <div className="p-4 border-b border-zinc-200 flex items-center justify-between bg-white">
           <h1 className="text-xl font-semibold tracking-tight">AI Resume Builder</h1>
           <div className="flex items-center gap-2">
+            <div className="relative flex items-center">
+              <Globe className="w-4 h-4 text-zinc-500 absolute left-2 pointer-events-none" />
+              <select 
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as Language)}
+                className="h-8 pl-7 pr-2 rounded-md border border-zinc-200 bg-transparent text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 appearance-none cursor-pointer hover:bg-zinc-50"
+              >
+                {LANGUAGES.map(l => (
+                  <option key={l.code} value={l.code}>{l.name}</option>
+                ))}
+              </select>
+            </div>
+
             <Popover>
               <PopoverTrigger asChild>
                 <Button size="icon" variant="ghost" className="h-8 w-8 text-zinc-500">
@@ -182,13 +214,13 @@ export default function App() {
               </PopoverTrigger>
               <PopoverContent className="w-80 p-4" align="end">
                 <div className="space-y-3">
-                  <h4 className="font-medium text-sm">API Settings</h4>
+                  <h4 className="font-medium text-sm">{t(language, 'api.settings')}</h4>
                   <p className="text-xs text-zinc-500">
-                    Please provide your API Key. Leave Base URL empty to use the official Gemini API, or configure a custom OpenAI-compatible endpoint.
+                    {t(language, 'api.settings.desc')}
                   </p>
                   <div className="space-y-2">
                     <div>
-                      <label className="text-xs font-medium text-zinc-700">Base URL</label>
+                      <label className="text-xs font-medium text-zinc-700">{t(language, 'api.baseUrl')}</label>
                       <input
                         type="text"
                         value={apiConfig.baseUrl}
@@ -197,7 +229,7 @@ export default function App() {
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-zinc-700">API Key</label>
+                      <label className="text-xs font-medium text-zinc-700">{t(language, 'api.apiKey')}</label>
                       <input
                         type="password"
                         value={apiConfig.apiKey}
@@ -206,7 +238,7 @@ export default function App() {
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-zinc-700">Model</label>
+                      <label className="text-xs font-medium text-zinc-700">{t(language, 'api.model')}</label>
                       <input
                         type="text"
                         value={apiConfig.model}
@@ -220,7 +252,7 @@ export default function App() {
                       className="w-full mt-2 h-8 text-xs"
                       onClick={() => handleSaveApiConfig({ baseUrl: '', apiKey: '', model: 'gemini-3.1-pro-preview' })}
                     >
-                      Reset to Default
+                      {t(language, 'api.reset')}
                     </Button>
                   </div>
                 </div>
@@ -231,19 +263,19 @@ export default function App() {
               <PopoverTrigger asChild>
                 <Button disabled={!resumeData || isExporting} size="sm" variant="outline" className="gap-2 h-8">
                   <Download className="w-4 h-4" />
-                  {isExporting ? 'Exporting...' : 'Export'}
+                  {isExporting ? t(language, 'export.exporting') : t(language, 'export.button')}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-48 p-1" align="end">
                 <div className="flex flex-col">
                   <Button onClick={handlePrint} variant="ghost" className="justify-start gap-2 h-9 px-2 text-sm font-normal">
-                    <FileText className="w-4 h-4 text-zinc-500" /> Export as PDF
+                    <FileText className="w-4 h-4 text-zinc-500" /> {t(language, 'export.download.pdf')}
                   </Button>
                   <Button onClick={handleExportWord} variant="ghost" className="justify-start gap-2 h-9 px-2 text-sm font-normal">
-                    <File className="w-4 h-4 text-zinc-500" /> Export as Word
+                    <File className="w-4 h-4 text-zinc-500" /> {t(language, 'export.download.word')}
                   </Button>
                   <Button onClick={handleExportJSON} variant="ghost" className="justify-start gap-2 h-9 px-2 text-sm font-normal">
-                    <FileJson className="w-4 h-4 text-zinc-500" /> Export as JSON
+                    <FileJson className="w-4 h-4 text-zinc-500" /> {t(language, 'export.download.json')}
                   </Button>
                 </div>
               </PopoverContent>
@@ -268,6 +300,9 @@ export default function App() {
             onTwoColumnChange={setTwoColumn}
             avatarUrl={avatarUrl}
             onAvatarChange={setAvatarUrl}
+            promptSettings={promptSettings}
+            onPromptSettingsChange={setPromptSettings}
+            language={language}
           />
         </div>
       </div>
@@ -285,6 +320,7 @@ export default function App() {
               lineSpacing={lineSpacing}
               twoColumn={twoColumn}
               avatarUrl={avatarUrl}
+              language={language}
             />
           </div>
         </div>

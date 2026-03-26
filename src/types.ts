@@ -47,6 +47,8 @@ export interface OptimizationProposal {
   moduleId: string; // matches id of WorkExperience or ProjectExperience
   originalText: string;
   optimizedText: string;
+  originalName?: string;
+  optimizedName?: string;
   reasoning: string;
   status: 'pending' | 'accepted' | 'rejected';
 }
@@ -55,4 +57,13 @@ export interface ApiConfig {
   baseUrl: string;
   apiKey: string;
   model: string;
+}
+
+export interface PromptSettings {
+  preset: 'standard' | 'aggressive' | 'conservative' | 'custom';
+  textVolume: 'concise' | 'normal' | 'detailed';
+  tweakProjectNames: boolean;
+  fabricationLevel: number; // 0.0 to 1.0
+  addRelevantExperiences: boolean;
+  customInstructions: string;
 }

@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { Check, X, Sparkles } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Skeleton } from './ui/skeleton';
+import { Language, t } from '../i18n';
 
 interface ResumePreviewProps {
   data: ResumeData | null;
@@ -15,9 +16,10 @@ interface ResumePreviewProps {
   lineSpacing: 'tight' | 'snug' | 'normal' | 'relaxed';
   twoColumn: { education: boolean; honors: boolean };
   avatarUrl: string | null;
+  language: Language;
 }
 
-export function ResumePreview({ data, proposals, onAccept, onReject, themeColor, lineSpacing, twoColumn, avatarUrl }: ResumePreviewProps) {
+export function ResumePreview({ data, proposals, onAccept, onReject, themeColor, lineSpacing, twoColumn, avatarUrl, language }: ResumePreviewProps) {
   if (!data) {
     return (
       <div className="w-full h-full p-12 flex flex-col gap-8 opacity-50">
@@ -145,7 +147,7 @@ export function ResumePreview({ data, proposals, onAccept, onReject, themeColor,
       </div>
 
       {/* Education */}
-      {renderSection('Education', data.education, (edu) => (
+      {renderSection(t(language, 'resume.education'), data.education, (edu) => (
         <div key={edu.id || edu.school} className={twoColumn.education ? "" : s.itemMb}>
           <div className="flex justify-between items-baseline mb-0.5">
             <h3 className="font-semibold" style={{ color: themeColor }}>{edu.school}</h3>
@@ -158,14 +160,14 @@ export function ResumePreview({ data, proposals, onAccept, onReject, themeColor,
           </div>
           {edu.courses && edu.courses.length > 0 && (
             <div className={cn("text-zinc-500 mt-0.5", s.text)}>
-              <span className="font-medium text-zinc-600">Courses:</span> {edu.courses.join(', ')}
+              <span className="font-medium text-zinc-600">{t(language, 'resume.courses')}</span> {edu.courses.join(', ')}
             </div>
           )}
         </div>
       ), twoColumn.education)}
 
       {/* Work Experience */}
-      {renderSection('Work Experience', data.workExperience, (work) => (
+      {renderSection(t(language, 'resume.work'), data.workExperience, (work) => (
         <div key={work.id} className={s.itemMb}>
           <div className="flex justify-between items-baseline mb-0.5">
             <h3 className="font-semibold" style={{ color: themeColor }}>{work.company}</h3>
@@ -179,7 +181,7 @@ export function ResumePreview({ data, proposals, onAccept, onReject, themeColor,
       ))}
 
       {/* Project Experience */}
-      {renderSection('Project Experience', data.projectExperience, (proj) => (
+      {renderSection(t(language, 'resume.projects'), data.projectExperience, (proj) => (
         <div key={proj.id} className={s.itemMb}>
           <div className="flex justify-between items-baseline mb-0.5">
             <h3 className="font-semibold" style={{ color: themeColor }}>{proj.name}</h3>
@@ -196,7 +198,7 @@ export function ResumePreview({ data, proposals, onAccept, onReject, themeColor,
       {data.skills && data.skills.length > 0 && (
         <div className={s.sectionMb}>
           <h2 className={cn("font-bold uppercase tracking-widest border-b border-zinc-300 pb-1 mb-2", s.text)} style={{ color: themeColor }}>
-            Core Skills
+            {t(language, 'resume.skills')}
           </h2>
           <div className="flex flex-wrap gap-1.5">
             {data.skills.map((skill, index) => (
@@ -212,7 +214,7 @@ export function ResumePreview({ data, proposals, onAccept, onReject, themeColor,
       {data.honors && data.honors.length > 0 && (
         <div className={s.sectionMb}>
           <h2 className={cn("font-bold uppercase tracking-widest border-b border-zinc-300 pb-1 mb-2", s.text)} style={{ color: themeColor }}>
-            Honors & Awards
+            {t(language, 'resume.honors')}
           </h2>
           <ul className={cn("list-disc list-inside text-zinc-700", s.leading, s.text, twoColumn.honors ? "grid grid-cols-2 gap-x-4" : "space-y-0.5")}>
             {data.honors.map((honor, index) => (
@@ -226,7 +228,7 @@ export function ResumePreview({ data, proposals, onAccept, onReject, themeColor,
       {data.languages && data.languages.length > 0 && (
         <div className={s.sectionMb}>
           <h2 className={cn("font-bold uppercase tracking-widest border-b border-zinc-300 pb-1 mb-2", s.text)} style={{ color: themeColor }}>
-            Languages
+            {t(language, 'resume.languages')}
           </h2>
           <div className="flex flex-wrap gap-4">
             {data.languages.map((lang, index) => (
@@ -242,7 +244,7 @@ export function ResumePreview({ data, proposals, onAccept, onReject, themeColor,
       {data.interests && data.interests.length > 0 && (
         <div className={s.sectionMb}>
           <h2 className={cn("font-bold uppercase tracking-widest border-b border-zinc-300 pb-1 mb-2", s.text)} style={{ color: themeColor }}>
-            Interests & Growth Direction
+            {t(language, 'resume.interests')}
           </h2>
           <p className={cn("text-zinc-700", s.leading, s.text)}>
             {data.interests.join(' • ')}

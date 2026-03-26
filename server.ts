@@ -15,7 +15,7 @@ async function startServer() {
 
   app.post("/api/chat", async (req, res) => {
     try {
-      const { baseUrl, apiKey, model, messages } = req.body;
+      const { baseUrl, apiKey, model, messages, temperature } = req.body;
       
       const url = baseUrl.replace(/\/$/, '') + '/chat/completions';
       
@@ -27,7 +27,8 @@ async function startServer() {
         },
         body: JSON.stringify({
           model,
-          messages
+          messages,
+          ...(temperature !== undefined ? { temperature } : {})
         })
       });
 
