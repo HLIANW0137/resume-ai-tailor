@@ -43,137 +43,27 @@ An intelligent, full-stack web application that helps you build, parse, and opti
 
 ---
 
-## 🚀 Getting Started
 
-### Prerequisites
+## 🚀 Getting Started 
 
-- Node.js (v18 or higher recommended)
+We provide one-click startup scripts to make local deployment as easy as possible. 
 
-- npm or yarn
+**Prerequisite:** You must have [Node.js](https://nodejs.org/) installed on your computer.
 
-### Installation
+### 🪟 For Windows Users:
+1. Download the project and extract the folder.
+2. Double-click the `start.bat` file.
+3. The script will automatically install dependencies, start the server, and open the application in your default browser (`http://localhost:3000`).
 
-1. **Clone the repository:**
-
-    ```bash
-    
-    git clone https://github.com/yourusername/ai-resume-builder.git
-    cd ai-resume-builder
-    ```
-
-2. **Install dependencies:**
-
-    ```bash
-    
-    npm install
-    ```
-
-3. **Start the development server:**
-
-    ```bash
-    
-    npm run dev
-    ```
-
-4. **Open your browser:**
-Navigate to [http://localhost:3000](http://localhost:3000).
-
+### 🍎 For macOS / 🐧 Linux Users:
+1. Download the project and open your Terminal.
+2. Navigate to the project folder.
+3. Grant execution permission (only needed once):
+   ```bash
+   chmod +x start.sh
 ---
 
-## 📖 How to Use
 
-1. **Configure API Key:**
-
-    - Click the Settings icon (⚙️) in the top right corner.
-
-    - Enter your Gemini API Key.
-
-    - (Optional) If you want to use a custom OpenAI-compatible API (like DeepSeek, Claude via proxy, etc.), enter the Base URL and the corresponding API Key.
-
-2. **Parse Resume:**
-
-    - Switch to the "Parse" tab.
-
-    - Paste your raw resume text and click Parse Resume. The AI will automatically populate the editor.
-
-3. **Optimize for a Job:**
-
-    - Switch to the "Optimize" tab.
-
-    - Paste the Job Description (JD) of the role you are applying for.
-
-    - Click Optimize Resume. Review the AI's proposed changes and click "Accept" to apply them to your resume.
-
-4. **Export:**
-
-    - Click Export -> Export as PDF to download your high-quality resume.
-
-    - Click Export -> Export JSON to save your data locally.
-
----
-
-## 🔧 Customization & Adjustment
-
-This project is designed to be highly customizable. Here is how you can adjust it to your needs:
-
-### 1. Adjusting AI Prompts
-
-If you want to change how the AI parses text or optimizes the resume, you can modify the prompts in `src/services/ai.ts`.
-
-- **Parsing Prompt**: Locate the `parseResume` function. You can add new fields to the JSON schema or change the instructions.
-
-- **Optimization Prompt**: Locate the `optimizeResume` function. You can adjust the tone, language, or methodology (e.g., change from STAR method to XYZ method).
-
-### 2. Modifying the Resume Theme/Styles
-
-The resume preview is styled using Tailwind CSS.
-
-- To change colors, fonts, or spacing of the generated resume, edit the ResumePreview component (usually located in `src/App.tsx` or `src/components/ResumePreview.tsx`).
-
-- Global styles and Tailwind variables can be adjusted in `src/index.css`.
-
-### 3. Tweaking PDF Export Settings
-
-The PDF export uses `html-to-image` to capture the DOM. If you need to adjust the resolution or background color, locate the `handlePrint` function in `src/App.tsx`:
-
-```javascript
-
-const dataUrl = await toPng(resumeRef.current, { 
-  quality: 1.0, 
-  pixelRatio: 2, // Increase for higher resolution, decrease for smaller file size
-  backgroundColor: '#ffffff',
-  width: widthPx,
-  height: heightPx
-});
-```
-
-### 4. Adding New Resume Sections
-
-To add a new section (e.g., "Certifications"):
-
-1. Update the `ResumeData` interface in `src/types.ts`.
-
-2. Update the JSON schema in the `parseResume` function in `src/services/ai.ts`.
-
-3. Add the corresponding UI inputs in the Editor section and the display logic in the Preview section within `src/App.tsx`.
-
----
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
-
-1. Fork the Project
-
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-
-5. Open a Pull Request
-
----
 
 ## 📝 License
 
