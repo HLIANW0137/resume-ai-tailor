@@ -44,39 +44,21 @@
 
 ## 🚀 快速开始
 
-### 前置要求
+我们提供一键启动脚本，让本地部署变得尽可能简单。
 
-- Node.js（推荐 v18 及以上版本）
+**前置条件：** 你必须在电脑上安装 [Node.js](https://nodejs.org/)。
 
-- npm 或 yarn
+### 🪟 Windows 用户：
+1. 下载项目并解压文件夹。
+2. 双击 `start.bat` 文件。
+3. 脚本将自动安装依赖、启动服务器，并在默认浏览器中打开应用（`http://localhost:3000`）。
 
-### 安装步骤
-
-1. **克隆仓库:**
-
-    ```bash
-    
-    git clone https://github.com/yourusername/ai-resume-builder.git
-    cd ai-resume-builder
-    ```
-
-2. **安装依赖:**
-
-    ```bash
-    
-    npm install
-    ```
-
-3. **启动开发服务:**
-
-    ```bash
-    
-    npm run dev
-    ```
-
-4. **打开浏览器:**
-访问 [http://localhost:3000](http://localhost:3000) 即可使用。
-
+### 🍎 macOS 用户 / 🐧 Linux 用户：
+1. 下载项目并打开终端。
+2. 进入项目文件夹。
+3. 授予执行权限（仅需一次）：
+   ```bash
+   chmod +x start.sh
 ---
 
 ## 📖 使用说明
